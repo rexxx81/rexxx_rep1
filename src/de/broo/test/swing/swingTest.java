@@ -32,7 +32,7 @@ import javax.swing.JDesktopPane;
 import java.awt.BorderLayout;
 
 public class swingTest extends JFrame {
-	private JTextField textField;
+	private static JTextField textField;
 
 	public swingTest() {
 		super();
@@ -87,8 +87,9 @@ public class swingTest extends JFrame {
 		JMenuItem menuItem_1 = new JMenuItem("2");
 		menuItem_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				hauptPanel.setVisible(false);
-				JPanel hauptPanel = init();
+				JPanel hauptPanel = swingTest.init();
 				getContentPane().add(hauptPanel);
 			}
 		});
@@ -104,7 +105,7 @@ public class swingTest extends JFrame {
 		hauptfenster.setVisible(true);
 		}
 	
-	private JPanel init() {
+	public static JPanel init() {
 		
 		System.out.println("init 1");
 		JPanel panel = new JPanel ();
