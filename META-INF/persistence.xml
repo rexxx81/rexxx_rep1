@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+  <persistence-unit name="todos" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>de.broo.test.eclipselink.toDo</class>
+    <properties>
+      <property name="eclipselink.target-database" value="DERBY"/>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="eclipselink.jdbc.url" value="jdbc:derby://localhost:1527/chapter02DB;create=true"/>
+      <property name="eclipselink.jdbc.user" value="APP"/>
+      <property name="eclipselink.jdbc.password" value="APP"/>
+    </properties>
+  </persistence-unit>
+</persistence>
