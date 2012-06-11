@@ -2,7 +2,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
   <persistence-unit name="todos" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>de.broo.test.eclipselink.toDo</class>
+    <class>de.broo.test.eclipselink.TODO</class>
     <properties>
       <property name="eclipselink.target-database" value="DERBY"/>
       <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>

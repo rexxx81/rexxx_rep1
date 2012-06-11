@@ -80,13 +80,15 @@ public class ebay_get_suggested {
 					parentString = parentString + " > " + parentArray[ii];
 				}
 
-				System.out.println("[" + Array[i].getCategory().getCategoryID()
-						+ "]" +parentString+" > "+ Array[i].getCategory().getCategoryName());
+				// System.out.println("[" +
+				// Array[i].getCategory().getCategoryID()
+				// + "]" +parentString+" > "+
+				// Array[i].getCategory().getCategoryName());
 
 			}
-			System.out.println("Count: " + Array.length);
-
-			System.out.println("");
+			// System.out.println("Count: " + Array.length);
+			//
+			// System.out.println("");
 
 		} catch (Exception e) {
 			System.out.println("Fail to get eBay official time.");

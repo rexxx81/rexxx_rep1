@@ -63,22 +63,27 @@ public class swtTestFtpUtil {
 			File[] fileList = dir.listFiles();
 
 			int i = fileList.length;
-			
+
 			swtTest.showUploadInfo(fileList.length, i);
 			for (File f : fileList) {
 
-				remoteResultFile = ftpHomeDir + "/" + swtTest.getProjectName()
-						+ "/" + f.getName();
+				if (!(f.getName().toString().equals("titel.jpg"))) {
+					remoteResultFile = ftpHomeDir + "/"
+							+ swtTest.getProjectName() + "/" + f.getName();
 
-				localSourceFile = swtTest.getSelectedDir() + "\\" + f.getName();
+					localSourceFile = swtTest.getSelectedDir() + "\\"
+							+ f.getName();
 
-				upload(localSourceFile, remoteResultFile, server, 21, username,
-						password, false);
-				i--; 
-				swtTest.showUploadInfo(fileList.length, i);
+					upload(localSourceFile, remoteResultFile, server, 21,
+							username, password, false);
+					i--;
+					swtTest.showUploadInfo(fileList.length, i);
 
-				System.out.println("Upload -> " + f.getName());
+					System.out.println("Upload -> " + f.getName());
+				} else {
+					System.out.println("Upload -> " + "titel.jpg übersprungen");
 
+				}
 			}
 			System.out.println("Upload abgeschlossen");
 
@@ -147,6 +152,61 @@ public class swtTestFtpUtil {
 		}
 
 		return ftpDirCheck;
+	}
+
+	public static int countFTP() {
+		int ftpDirCount = 0;
+		FTPClient ftp = new FTPClient();
+
+		try {
+			int reply;
+			ftp.connect(server);
+			ftp.login(username, password);
+
+			// System.out.println("Connected to " + server + ".");
+			// System.out.print(ftp.getReplyString());
+
+			// After connection attempt, you should check the reply code to
+			// verify
+			// success.
+
+			reply = ftp.getReplyCode();
+
+			if (!FTPReply.isPositiveCompletion(reply)) {
+				ftp.disconnect();
+				System.err.println("FTP server refused connection.");
+				System.exit(1);
+			}
+
+			FTPFile[] files = ftp.listFiles("/" + ftpHomeDir + "/"
+					+ swtTest.getProjectName());
+
+			ftpDirCount = files.length;
+			System.out.println(ftpDirCount);
+			// System.out.print(ftp.getReplyString());
+			for (FTPFile ftpFile : files) {
+
+				if (ftpFile.getName().equals(swtTest.getProjectName())) {
+
+				}
+
+			}
+
+			ftp.logout();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (ftp.isConnected()) {
+				try {
+					ftp.disconnect();
+				} catch (IOException ioe) {
+					// do nothing
+				}
+			}
+			// System.exit(error ? 1 : 0);
+		}
+
+		return ftpDirCount;
 	}
 
 	public static boolean upload(String localSourceFile,
