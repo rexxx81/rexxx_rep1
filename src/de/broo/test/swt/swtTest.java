@@ -2,9 +2,13 @@ package de.broo.test.swt;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.StringTokenizer;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -28,6 +32,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+
+import de.broo.test.ebay.addItem;
 import de.broo.test.ebay.ebay_get_suggested;
 import com.ebay.soap.eBLBaseComponents.SuggestedCategoryArrayType;
 import com.ebay.soap.eBLBaseComponents.SuggestedCategoryType;
@@ -35,14 +41,29 @@ import com.ebay.soap.eBLBaseComponents.SuggestedCategoryType;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.events.VerifyEvent;
 
 public class swtTest {
 	private static Text text;
-	static String selectedDir = null;
-	static String fileFilterPath = "C:\\Users\\Rexxx\\Dropbox\\Photos\\Export";
-	static String projectName = null;
-	static int template_id = 0;
-	static int CategorieID = 0;
+	public static String selectedDir = null;
+	public static String fileFilterPath = "C:\\Users\\Rexxx\\Dropbox\\Photos\\Export";
+	public static String projectName = null;
+	public static int template_id = 0;
+	public static String CategorieID = "";
+	public static String HTMLtemplate = null;
+	public static String titel = null;
+
+	public static boolean festAuktion = true;
+	public static double festpreis = 0;
+	public static boolean zustandgebraucht = true;
+	public static int angebotDauer = 7;
+	public static String versand_deu = "";
+	public static double versand_deu_preis = 0;
+	public static String versand_welt = "";
+	public static double versand_welt_preis = 0;
+	public static boolean startzeit = false;
+	public static Date startzeit_plan = null;
 
 	private static Text text_1;
 	private static Text text_2;
@@ -65,6 +86,9 @@ public class swtTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		projectName = "test";
+
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setSize(494, 480);
@@ -252,6 +276,15 @@ public class swtTest {
 		tblclmnName.setText("Name");
 
 		Button btnAuswhlen = new Button(grpKategorieAuswhlen, SWT.NONE);
+		btnAuswhlen.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				tabFolder.setSelection(2);
+				CategorieID = text_12.getText();
+
+			}
+		});
 		btnAuswhlen.setText("Ausw\u00E4hlen");
 		btnAuswhlen.setBounds(322, 264, 127, 23);
 
@@ -363,12 +396,14 @@ public class swtTest {
 		btnNewButton_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				createTemplate(template_id);
+				HTMLtemplate = createTemplate(template_id);
+				setTitel(text_6.getText());
+				tabFolder.setSelection(3);
 			}
 
 		});
 		btnNewButton_2.setBounds(311, 269, 138, 23);
-		btnNewButton_2.setText("New Button");
+		btnNewButton_2.setText("Template erstellen");
 
 		Label lblNewLabel_2 = new Label(grpBeschreibung, SWT.NONE);
 		lblNewLabel_2.setAlignment(SWT.RIGHT);
@@ -390,57 +425,126 @@ public class swtTest {
 		button.setText("1 EUR Auktion");
 		button.setBounds(10, 22, 98, 16);
 
-		Button button_2 = new Button(grpPreis, SWT.RADIO);
+		final Button button_2 = new Button(grpPreis, SWT.RADIO);
 		button_2.setText("Festpreis");
 		button_2.setSelection(true);
 		button_2.setBounds(122, 22, 65, 16);
 
-		text_8 = new Text(grpPreis, SWT.BORDER);
-		text_8.setBounds(193, 22, 76, 19);
+		ModifyListener Preislistener = new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				Text text = (Text) arg0.widget;
+				try {
+
+					if (!text.getText().equals("")) {
+						double check = Double.parseDouble(text.getText());
+					}
+					return;
+				} catch (NumberFormatException e) {
+					MessageBox mb = new MessageBox(shell, SWT.OK);
+					mb.setText("Fehler");
+					mb.setMessage("Bitte gültigen Preis eingeben(z.B. '1.50')");
+					int val = mb.open();
+
+					text.setFocus();
+					text.setText("");
+					return;
+
+				}
+
+			}
+		};
+
+		text_8 = new Text(grpPreis, SWT.BORDER | SWT.RIGHT);
+		text_8.addModifyListener(Preislistener);
+		text_8.setBounds(193, 22, 59, 19);
+
+		Label label_1 = new Label(grpPreis, SWT.NONE);
+		label_1.setText("EUR");
+		label_1.setBounds(254, 25, 21, 13);
 
 		Group grpVersand = new Group(grpBitteberprfen, SWT.NONE);
 		grpVersand.setText("Versand DEU");
-		grpVersand.setBounds(10, 83, 142, 56);
+		grpVersand.setBounds(10, 143, 142, 76);
 
-		text_9 = new Text(grpVersand, SWT.BORDER);
-		text_9.setBounds(10, 27, 122, 19);
+		text_9 = new Text(grpVersand, SWT.BORDER | SWT.RIGHT);
+		text_9.setText("4.90");
+		text_9.setBounds(10, 47, 90, 19);
+		text_9.addModifyListener(Preislistener);
+
+		final Combo combo_3 = new Combo(grpVersand, SWT.NONE);
+		combo_3.setBounds(10, 20, 122, 21);
+		combo_3.add("Hermes Paket", 0);
+		combo_3.add("DHL Paket", 1);
+		combo_3.select(0);
+
+		Label lblEur = new Label(grpVersand, SWT.NONE);
+		lblEur.setBounds(106, 53, 26, 13);
+		lblEur.setText("EUR");
 
 		Group grpVersandWeltweit = new Group(grpBitteberprfen, SWT.NONE);
 		grpVersandWeltweit.setText("Versand Weltweit");
-		grpVersandWeltweit.setBounds(158, 83, 131, 56);
+		grpVersandWeltweit.setBounds(158, 143, 131, 76);
 
-		text_10 = new Text(grpVersandWeltweit, SWT.BORDER);
-		text_10.setBounds(10, 27, 111, 19);
+		text_10 = new Text(grpVersandWeltweit, SWT.BORDER | SWT.RIGHT);
+		text_10.setText("15.90");
+		text_10.setBounds(10, 47, 77, 19);
+		text_10.addModifyListener(Preislistener);
+
+		final Combo combo_4 = new Combo(grpVersandWeltweit, SWT.NONE);
+		combo_4.setBounds(10, 20, 111, 21);
+		combo_4.add("DHL Päckchen", 0);
+		combo_4.add("DHL Paket", 1);
+		combo_4.select(0);
+
+		Label label = new Label(grpVersandWeltweit, SWT.NONE);
+		label.setText("EUR");
+		label.setBounds(93, 53, 26, 13);
 
 		Group grpTitelbild = new Group(grpBitteberprfen, SWT.NONE);
 		grpTitelbild.setText("Titelbild");
-		grpTitelbild.setBounds(296, 21, 172, 118);
-
-		Button btnEintragen = new Button(grpBitteberprfen, SWT.NONE);
-		btnEintragen.setText("Eintragen");
-		btnEintragen.setBounds(341, 244, 127, 23);
+		grpTitelbild.setBounds(296, 21, 172, 198);
 
 		Button btnVorschau = new Button(grpBitteberprfen, SWT.NONE);
 		btnVorschau.setText("Vorschau");
-		btnVorschau.setBounds(209, 244, 127, 23);
+		btnVorschau.setBounds(209, 324, 127, 23);
 
 		Group grpStartzeit = new Group(grpBitteberprfen, SWT.NONE);
 		grpStartzeit.setText("Startzeit");
-		grpStartzeit.setBounds(10, 145, 458, 93);
+		grpStartzeit.setBounds(10, 225, 458, 93);
 
-		Combo combo = new Combo(grpStartzeit, SWT.NONE);
-		combo.setBounds(128, 26, 66, 21);
+		Combo combo_6 = new Combo(grpStartzeit, SWT.NONE);
+		combo_6.setBounds(107, 37, 66, 21);
+		combo_6.add("Montag", 0);
+		combo_6.add("Dienstag", 1);
+		combo_6.add("Mittwoch", 2);
+		combo_6.add("Donnerstag", 3);
+		combo_6.add("Freitag", 4);
+		combo_6.add("Samstag", 5);
+		combo_6.add("Sonntag", 6);
+		combo_6.select(6);
 
 		Label lblTag = new Label(grpStartzeit, SWT.NONE);
-		lblTag.setBounds(106, 31, 49, 13);
+		lblTag.setBounds(79, 43, 49, 13);
 		lblTag.setText("Tag");
 
 		Label lblZeit = new Label(grpStartzeit, SWT.NONE);
 		lblZeit.setText("Zeit");
-		lblZeit.setBounds(216, 26, 24, 13);
+		lblZeit.setBounds(192, 42, 24, 13);
 
-		Combo combo_1 = new Combo(grpStartzeit, SWT.NONE);
-		combo_1.setBounds(240, 23, 92, 21);
+		Combo combo_7 = new Combo(grpStartzeit, SWT.NONE);
+		combo_7.setBounds(221, 37, 92, 21);
+		combo_7.add("17:00", 0);
+		combo_7.add("17:30", 1);
+		combo_7.add("18:00", 2);
+		combo_7.add("18:30", 3);
+		combo_7.add("19:00", 4);
+		combo_7.add("19:30", 5);
+		combo_7.add("20:00", 6);
+		combo_7.add("20:30", 7);
+		combo_7.add("21:00", 8);
+		combo_7.add("21:30", 9);
+		combo_7.add("22:00", 10);
+		combo_7.select(5);
 
 		Button btnRadioButton = new Button(grpStartzeit, SWT.RADIO);
 		btnRadioButton.addSelectionListener(new SelectionAdapter() {
@@ -448,12 +552,42 @@ public class swtTest {
 			public void widgetSelected(SelectionEvent e) {
 			}
 		});
-		btnRadioButton.setBounds(10, 28, 83, 16);
+		btnRadioButton.setBounds(10, 42, 83, 16);
 		btnRadioButton.setText("Geplant");
 
-		Button btnJetzt = new Button(grpStartzeit, SWT.RADIO);
+		final Button btnJetzt = new Button(grpStartzeit, SWT.RADIO);
+		btnJetzt.setSelection(true);
 		btnJetzt.setText("Jetzt");
-		btnJetzt.setBounds(10, 50, 83, 16);
+		btnJetzt.setBounds(10, 21, 83, 16);
+
+		Group grpAngebotsdauer = new Group(grpBitteberprfen, SWT.NONE);
+		grpAngebotsdauer.setText("Angebotsdauer");
+		grpAngebotsdauer.setBounds(158, 81, 132, 56);
+
+		final Combo combo_5 = new Combo(grpAngebotsdauer, SWT.NONE);
+		combo_5.setBounds(10, 17, 92, 21);
+		combo_5.add("5", 0);
+		combo_5.add("7", 1);
+		combo_5.add("10", 2);
+		combo_5.select(2);
+
+		Group grpZustand = new Group(grpBitteberprfen, SWT.NONE);
+		grpZustand.setText("Zustand");
+		grpZustand.setBounds(10, 81, 142, 56);
+
+		Button btnGebraucht = new Button(grpZustand, SWT.RADIO);
+		btnGebraucht.setSelection(true);
+		btnGebraucht.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		btnGebraucht.setText("Gebraucht");
+		btnGebraucht.setBounds(10, 22, 74, 16);
+
+		final Button btnNeu = new Button(grpZustand, SWT.RADIO);
+		btnNeu.setText("Neu");
+		btnNeu.setBounds(90, 22, 42, 16);
 
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
@@ -500,6 +634,51 @@ public class swtTest {
 		text_12 = new Text(grpKategorie_1, SWT.BORDER);
 		text_12.setEnabled(false);
 		text_12.setBounds(10, 16, 61, 19);
+
+		Button btnEintragen = new Button(grpBitteberprfen, SWT.NONE);
+		btnEintragen.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				if (!button_2.getSelection() == false) {
+					festAuktion = true;
+
+					if (!text_8.getText().equals("")) {
+						festpreis = 0;
+					}
+
+				} else {
+					festAuktion = false;
+				}
+
+				if (!btnNeu.getSelection() == true) {
+					zustandgebraucht = true;
+				} else {
+					zustandgebraucht = false;
+				}
+
+				angebotDauer = Integer.valueOf(combo_5.getText());
+
+				String versand_deu = combo_3.getText();
+				versand_deu_preis = Double.parseDouble(text_9.getText());
+				versand_welt = combo_4.getText();
+				versand_welt_preis = Double.parseDouble(text_10.getText());
+
+				if (btnJetzt.getSelection() == true) {
+					startzeit = false;
+					startzeit_plan = null;
+				} else {
+					startzeit = true;
+					startzeit_plan = null;
+
+				}
+
+				addItem ai = new addItem();
+			}
+		});
+		btnEintragen.setText("Eintragen");
+		btnEintragen.setBounds(341, 324, 127, 23);
+
 		shell.open();
 		// checkFTP();
 
@@ -581,16 +760,21 @@ public class swtTest {
 	}
 
 	public static String createTemplate(int template_id) {
-		String template = null;
-		String imgString = null;
-		int imgCount = 0;
+		String template = "";
+		String imgString = "";
+		FTPFile[] files = null;
 
-		imgCount = swtTestFtpUtil.countFTP();
+		files = swtTestFtpUtil.countFTP();
 		// System.out.println(imgCount);
 
-		// imgString = imgString +
-		// "<img border='0' src='http://www.kunsthaus-poorhosaini.de/antik_ebay/upload/".$art_id."/"(i+1)
-		// +".jpg' align='center'><br><br><br>";
+		for (FTPFile ftpFile : files) {
+
+			imgString = imgString
+					+ "<img border='0' src='http://www.kunsthaus-poorhosaini.de/ebay_rene/"
+					+ projectName + "/" + ftpFile.getName()
+					+ "' align='center'><br><br><br>";
+
+		}
 
 		switch (template_id) {
 
@@ -622,9 +806,7 @@ public class swtTest {
 					+ "<p id='main_text'>Wir verkaufen - sofern nicht anders angegeben - "
 					+ "ausschließlich Gebrauchtware.<br>"
 					+ "<br></p>"
-					+
-
-					"<p id='main_text'><u>"
+					+ "<p id='main_text'><u>"
 					+ "Inhaber:</u><br><br>"
 					+ "Tobias Poorhosaini<br>Dipl. Ing. S.N. Poorhosaini<br>Öffentlich bestellter und "
 					+ "staatlich vereidigter Auktionator</p>"
@@ -633,9 +815,7 @@ public class swtTest {
 					+ "<p id='main_text'>"
 					+ "Gemälde - Antiquitäten - Schmuck</p>"
 					+ "<p id='main_text'><img border='0' src='http://www.kunsthaus-poorhosaini.de/antik_ebay/template/Laden1.JPG' width='200' height='298' align='center'></p>"
-					+
-
-					"<p id='main_text'><br>Die Antik Galerie in Darmstadt wurde 1980 von Dipl. Ing."
+					+ "<p id='main_text'><br>Die Antik Galerie in Darmstadt wurde 1980 von Dipl. Ing."
 					+ "S. N. Poorhosaini eröffnet. Bei uns finden Sie exklusive Gegenstände aus allen "
 					+ "Kunstepochen: Gemälde, Skulpturen, Schmuck, Taschenuhren, Jugendstil, "
 					+ "Meissnerporzellan, Möbel, Glas und vieles mehr. Die Preise beginnen schon bei "
@@ -840,29 +1020,74 @@ public class swtTest {
 					+ "<p id='main_text'>Die Zufriedenheit des Kunden steht bei uns immer an oberster "
 					+ "Stelle.</p>"
 					+ "<p id='main_text'>Wir sind der Meinung, dass auf eBay grundsätzlich keine "
-					+
-
-					"negativen Bewertungen vergeben werden müssen.</p>"
+					+ "negativen Bewertungen vergeben werden müssen.</p>"
 					+ "<p id='main_text'>    Bitte nehmen Sie deswegen bei jedem Problem zuerst Kontakt mit "
 					+ "uns auf. Wir werden in jedem Fall eine unkomplizierte Lösung "
 					+ "finden.</p>"
 					+ "<p id='main_text'>&nbsp;</p>"
 					+ "<p id='main_text'>&nbsp;</p>"
-					+
-
-					" <!-- ENDE TEXTLICHER INHALT -->"
-					+ "</td>"
-					+ "</tr>"
-					+ "</table>" + "</body>" + "</HTML>";
+					+ "</td></tr></table></body></HTML>";
 
 			break;
 		case 1:
+
+			template = "<div align='center'><b><br>"
+					+ text_6.getText()
+					+ "</b><br><br>"
+					+ text_7.getText()
+					+ "<br><br>"
+
+					+ "Gerne beantworte ich euch weitere Fragen per PN. Bitte beachtet auch meine anderen Auktionen. <br>Viel Spaß beim bieten…<br><br> </div>"
+					+ "<div align='center'>"
+					+ imgString
+					+ "</div><div align='center'>Die Ware wird unter Ausschluss jeglicher Gewährleistung verkauft. Der Ausschluss gilt nicht für<br> Schadenersatzansprüche aus grob fahrlässiger bzw. vorsätzlicher Verletzung von Pflichten des<br> Verkäufers sowie für jede Verletzung von Leben, Körper und Gesundheit.<br></div>";
+
 			break;
 		case 2:
+			template = "<div align='center'><b><br>"
+					+ text_6.getText()
+					+ "</b><br><br>"
+					+ text_7.getText()
+					+ "<br><br>"
+
+					+ "Gerne beantworte ich euch weitere Fragen per PN. Bitte beachtet auch meine anderen Auktionen. <br>Viel Spaß beim bieten…<br><br> </div>"
+					+ "<div align='center'>"
+					+ imgString
+					+ "</div><div align='center'>Die Ware wird unter Ausschluss jeglicher Gewährleistung verkauft. Der Ausschluss gilt nicht für<br> Schadenersatzansprüche aus grob fahrlässiger bzw. vorsätzlicher Verletzung von Pflichten des<br> Verkäufers sowie für jede Verletzung von Leben, Körper und Gesundheit.<br></div>";
+
 			break;
 
 		}
 
+		System.out.println(template);
 		return template;
+	}
+
+	public static String getHTMLtemplate() {
+
+		HTMLtemplate = "sfsfdfssdffdsfdsfssfsfddfssdfsdffdssdf";
+		return HTMLtemplate;
+	}
+
+	public static void setHTMLtemplate(String hTMLtemplate) {
+		HTMLtemplate = hTMLtemplate;
+	}
+
+	public static String getTitel() {
+		titel = "sddfdsfdsfssffsdfdfsdfff";
+		return titel;
+	}
+
+	public static void setTitel(String Titel) {
+		titel = Titel;
+	}
+
+	public static String getCategorieID() {
+		CategorieID = "73839";
+		return CategorieID;
+	}
+
+	public static void setCategorieID(String categorieID) {
+		CategorieID = categorieID;
 	}
 }

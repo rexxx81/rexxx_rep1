@@ -154,8 +154,8 @@ public class swtTestFtpUtil {
 		return ftpDirCheck;
 	}
 
-	public static int countFTP() {
-		int ftpDirCount = 0;
+	public static FTPFile[] countFTP() {
+		FTPFile[] files = null;
 		FTPClient ftp = new FTPClient();
 
 		try {
@@ -178,11 +178,9 @@ public class swtTestFtpUtil {
 				System.exit(1);
 			}
 
-			FTPFile[] files = ftp.listFiles("/" + ftpHomeDir + "/"
+			files = ftp.listFiles("/" + ftpHomeDir + "/"
 					+ swtTest.getProjectName());
 
-			ftpDirCount = files.length;
-			System.out.println(ftpDirCount);
 			// System.out.print(ftp.getReplyString());
 			for (FTPFile ftpFile : files) {
 
@@ -206,7 +204,7 @@ public class swtTestFtpUtil {
 			// System.exit(error ? 1 : 0);
 		}
 
-		return ftpDirCount;
+		return files;
 	}
 
 	public static boolean upload(String localSourceFile,
