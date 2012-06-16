@@ -644,11 +644,12 @@ public class swtTest {
 					festAuktion = true;
 
 					if (!text_8.getText().equals("")) {
-						festpreis = 0;
+						festpreis = Double.valueOf(text_8.getText());
 					}
 
 				} else {
 					festAuktion = false;
+					festpreis = 1;
 				}
 
 				if (!btnNeu.getSelection() == true) {
@@ -1065,7 +1066,7 @@ public class swtTest {
 
 	public static String getHTMLtemplate() {
 
-		HTMLtemplate = "sfsfdfssdffdsfdsfssfsfddfssdfsdffdssdf";
+		// HTMLtemplate = "sfsfdfssdffdsfdsfssfsfddfssdfsdffdssdf";
 		return HTMLtemplate;
 	}
 
@@ -1074,7 +1075,7 @@ public class swtTest {
 	}
 
 	public static String getTitel() {
-		titel = "sddfdsfdsfssffsdfdfsdfff";
+		// titel = titel;
 		return titel;
 	}
 
@@ -1083,7 +1084,7 @@ public class swtTest {
 	}
 
 	public static String getCategorieID() {
-		CategorieID = "73839";
+		// CategorieID = "73839";
 		return CategorieID;
 	}
 
