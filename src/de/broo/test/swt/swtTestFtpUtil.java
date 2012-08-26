@@ -67,7 +67,7 @@ public class swtTestFtpUtil {
 			swtTest.showUploadInfo(fileList.length, i);
 			for (File f : fileList) {
 
-				if (!(f.getName().toString().equals("titelx.jpg"))) {
+				if (!(f.getName().toString().equals("titel.jpg"))) {
 					remoteResultFile = ftpHomeDir + "/"
 							+ swtTest.getProjectName() + "/" + f.getName();
 

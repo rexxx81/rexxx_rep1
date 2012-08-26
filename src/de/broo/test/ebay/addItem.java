@@ -87,7 +87,6 @@ public class addItem {
 			ApiContext apiContext = getApiContext();
 
 			// [Step 2] Create a new item object.
-			System.out.println(pictureFiles[0].toString());
 			System.out.println("===== [2] Item Information ====");
 
 			ItemType item = buildItem(swtTest.getTitel(),
@@ -172,7 +171,7 @@ public class addItem {
 		if (festAuktion == true) {
 			item.setListingType(ListingTypeCodeType.FIXED_PRICE_ITEM);
 		} else {
-			item.setListingType(ListingTypeCodeType.AUCTION);
+			// item.setListingType(ListingTypeCodeType.AUCTION);
 		}
 
 		// listing price
